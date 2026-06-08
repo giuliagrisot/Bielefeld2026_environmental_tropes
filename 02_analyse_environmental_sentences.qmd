@@ -1,0 +1,229 @@
+---
+title: "2. Analyse Environmental Sentences"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Aim
+
+In this notebook you will use your lexicon to retrieve environmental sentences
+from the prepared corpus.
+
+The key idea is:
+
+> Trigger terms help us find possible environmental passages. Descriptor terms
+> help us interpret how environments are represented.
+
+```{r}
+#| label: setup
+#| include: false
+library(tidyverse)
+library(tidytext)
+
+dir.create("output", showWarnings = FALSE)
+
+normalise_term <- function(x) {
+  x %>%
+    stringr::str_to_lower() %>%
+    stringr::str_squish()
+}
+
+regex_escape <- function(x) {
+  stringr::str_replace_all(x, "([\\\\.^$|()\\[\\]{}*+?])", "\\\\\\1")
+}
+```
+
+## Step 1: Load Your Lexicon And The Corpus
+
+The corpus has already been prepared. It contains sentence-level extracts from
+the four novels.
+
+```{r}
+lexicon <- readr::read_csv("data/student_lexicon.csv", show_col_types = FALSE) %>%
+  mutate(
+    term = normalise_term(term),
+    type = normalise_term(type),
+    role = normalise_term(role)
+  )
+
+corpus <- readr::read_csv("data/children_lit_sentences.csv", show_col_types = FALSE)
+
+glimpse(corpus)
+```
+
+## Step 2: Inspect The Corpus
+
+Before searching computationally, look at the data as readers. 
+
+```{r}
+corpus %>%
+  count(title, author, sort = TRUE)
+```
+"n" here represents the number of sentences for each title and author combination.
+
+We can also have a look at a few sentences:
+
+```{r}
+set.seed(2026)
+
+corpus %>%
+  slice_sample(n = 8) %>%
+  select(sentence, title)
+
+```
+
+## Step 3: Use Trigger Terms To Retrieve Sentences
+
+Here we separate retrieval from interpretation.
+
+Trigger terms answer:
+
+> Which sentences should we retrieve?
+
+```{r}
+trigger_terms <- lexicon %>%
+  filter(role == "trigger") %>%
+  pull(term) %>%
+  unique()
+
+if (length(trigger_terms) == 0) {
+  stop("Your lexicon has no trigger terms. Return to Notebook 1 and add some.")
+}
+
+trigger_terms
+```
+
+The next code block turns your trigger terms into a search pattern.
+
+```{r}
+trigger_pattern <- paste0(
+  "\\b(",
+  paste(regex_escape(trigger_terms), collapse = "|"),
+  ")\\b"
+)
+
+environmental_sentences <- corpus %>%
+  mutate(sentence_lower = normalise_term(sentence)) %>%
+  filter(stringr::str_detect(sentence_lower, trigger_pattern)) %>%
+  mutate(
+    trigger_matches = stringr::str_extract_all(sentence_lower, trigger_pattern),
+    trigger_matches = purrr::map_chr(trigger_matches, ~ paste(unique(.x), collapse = "; "))
+  ) %>%
+  select(sentence_id, title, author, gutenberg_id, source_url, book_sentence_id, sentence, trigger_matches)
+
+environmental_sentences %>%
+  count(title, sort = TRUE)
+```
+
+## Step 4: Inspect The Retrieved Sentences
+
+This is where interpretation returns. Ask whether the computer has applied your
+definition in a useful way.
+
+```{r}
+message("Retrieved sentences: ", nrow(environmental_sentences))
+message("Total corpus sentences: ", nrow(corpus))
+message("Retrieval rate: ", round(nrow(environmental_sentences) / nrow(corpus) * 100, 2), "%")
+```
+
+```{r}
+set.seed(2026)
+
+environmental_sentences %>%
+  slice_sample(n = min(12, nrow(environmental_sentences))) %>%
+  select(title, sentence, trigger_matches)
+```
+
+Questions:
+
+1. Which retrieved sentences are clearly environmental?
+2. Which retrieved sentences are noisy or irrelevant?
+3. What might your trigger list have missed?
+
+```{r}
+readr::write_csv(environmental_sentences, "output/02_environmental_sentences.csv")
+```
+
+## Step 5: Look For Descriptor-Trigger Patterns
+
+Descriptor terms answer:
+
+> How is the environment being represented?
+
+The code below tokenises sentences into individual words. It then looks for
+descriptor terms within the three words before a trigger term.
+
+This is a simple method. It will not capture every meaningful phrase, but it
+helps us move from isolated keywords to relational patterns.
+
+```{r}
+descriptor_terms <- lexicon %>%
+  filter(role == "descriptor") %>%
+  pull(term) %>%
+  unique()
+
+if (length(descriptor_terms) == 0) {
+  stop("Your lexicon has no descriptor terms. Return to Notebook 1 and add some.")
+}
+
+descriptor_terms
+```
+
+```{r}
+tokens <- environmental_sentences %>%
+  select(sentence_id, title, author, gutenberg_id, source_url, book_sentence_id, sentence) %>%
+  tidytext::unnest_tokens(
+    output = "word",
+    input = "sentence",
+    token = "words",
+    to_lower = TRUE
+  ) %>%
+  group_by(sentence_id) %>%
+  mutate(
+    token_position = row_number(),
+    prev_1 = lag(word, 1),
+    prev_2 = lag(word, 2),
+    prev_3 = lag(word, 3)
+  ) %>%
+  ungroup()
+
+descriptor_trigger_pairs <- tokens %>%
+  filter(word %in% trigger_terms) %>%
+  select(sentence_id, title, author, gutenberg_id, source_url, book_sentence_id,
+         token_position, trigger = word, prev_1, prev_2, prev_3) %>%
+  pivot_longer(
+    cols = starts_with("prev_"),
+    names_to = "distance",
+    values_to = "descriptor"
+  ) %>%
+  filter(descriptor %in% descriptor_terms) %>%
+  mutate(
+    distance = readr::parse_number(distance),
+    pair = paste(descriptor, trigger)
+  ) %>%
+  arrange(sentence_id, token_position, distance) %>%
+  distinct(sentence_id, token_position, descriptor, trigger, .keep_all = TRUE)
+
+pair_counts <- descriptor_trigger_pairs %>%
+  count(pair, descriptor, trigger, sort = TRUE)
+
+pair_counts
+```
+
+```{r}
+readr::write_csv(descriptor_trigger_pairs, "output/03_descriptor_trigger_pairs_long.csv")
+readr::write_csv(pair_counts, "output/03_descriptor_trigger_pair_counts.csv")
+```
+
+## Reflection
+
+1. Which descriptor-trigger pairs are most interesting?
+2. Are the most frequent pairs also the most meaningful?
+3. What kinds of description does this method miss?
+

@@ -1,0 +1,8 @@
+term,type,role,notes
+# forest,entity,trigger,environmental place
+# river,entity,trigger,environmental place
+# storm,process,trigger,weather event
+# dark,condition,descriptor,too broad as trigger but useful as description
+# green,condition,descriptor,condition or colour
+# village,exclude,exclude,borderline built place
+

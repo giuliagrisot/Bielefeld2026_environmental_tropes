@@ -1,0 +1,167 @@
+---
+title: "3. Interpret Environmental Tropes"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Aim
+
+In this notebook you will move from computational patterns back to literary
+interpretation.
+
+The computer can extract repeated descriptor-trigger pairs. It cannot decide
+what those patterns mean. That interpretive step belongs to you.
+
+```{r}
+#| label: setup
+#| include: false
+library(tidyverse)
+
+dir.create("data", showWarnings = FALSE)
+dir.create("output", showWarnings = FALSE)
+
+normalise_term <- function(x) {
+  x %>%
+    stringr::str_to_lower() %>%
+    stringr::str_squish()
+}
+```
+
+## Step 1: Load The Pattern Output
+
+This file was created in Notebook 2.
+
+```{r}
+pair_counts <- readr::read_csv(
+  "output/03_descriptor_trigger_pair_counts.csv",
+  show_col_types = FALSE
+)
+
+pair_counts
+```
+
+## Step 2: Create An Annotation Template
+
+The next block saves a template. Open the CSV and add a `proposed_trope` for
+each pattern you want to interpret.
+
+Possible trope labels might include:
+
+- threatening wilderness
+- renewal
+- exposure
+- scarcity
+- climatic intensity
+- atmospheric beauty
+- hidden garden
+- untamed landscape
+
+You may invent your own labels. Disagreement is not a failure. It shows where
+interpretation enters the workflow.
+
+```{r}
+trope_template <- pair_counts %>%
+  arrange(desc(n), pair) %>%
+  mutate(
+    proposed_trope = "",
+    evidence_or_reason = ""
+  )
+
+readr::write_csv(trope_template, "data/trope_annotations_template.csv")
+
+trope_template
+```
+
+Save your completed version as:
+
+```text
+data/trope_annotations.csv
+```
+
+## Step 3: Summarise Your Trope Labels
+
+Run this section after you have created `data/trope_annotations.csv`.
+
+```{r}
+if (!file.exists("data/trope_annotations.csv")) {
+  message("No completed annotation file found yet.")
+  message("Create data/trope_annotations.csv from the template, then rerun this section.")
+  trope_summary <- tibble()
+} else {
+  raw_trope_annotations <- readr::read_csv(
+    "data/trope_annotations.csv",
+    show_col_types = FALSE
+  ) %>%
+    mutate(proposed_trope = normalise_term(proposed_trope)) %>%
+    filter(!is.na(proposed_trope), proposed_trope != "")
+
+  trope_annotations <- raw_trope_annotations %>%
+    select(pair, descriptor, trigger, proposed_trope, evidence_or_reason) %>%
+    inner_join(
+      pair_counts,
+      by = c("pair", "descriptor", "trigger")
+    )
+
+  unmatched_annotations <- raw_trope_annotations %>%
+    anti_join(
+      pair_counts,
+      by = c("pair", "descriptor", "trigger")
+    )
+
+  if (nrow(unmatched_annotations) > 0) {
+    message("Some annotations did not match the current pair output and were ignored:")
+    print(unmatched_annotations %>% select(pair, proposed_trope))
+  }
+
+  if (nrow(trope_annotations) == 0) {
+    message("No current descriptor-trigger pairs have been annotated yet.")
+    trope_summary <- tibble()
+  } else {
+    trope_summary <- trope_annotations %>%
+      group_by(proposed_trope) %>%
+      summarise(
+        total_pair_tokens = sum(n),
+        unique_pairs = n_distinct(pair),
+        examples = paste(head(pair, 5), collapse = "; "),
+        .groups = "drop"
+      ) %>%
+      arrange(desc(total_pair_tokens))
+  }
+
+  trope_summary
+}
+```
+
+```{r}
+if (nrow(trope_summary) > 0) {
+  readr::write_csv(trope_summary, "output/04_trope_summary.csv")
+}
+```
+
+## Step 4: Interpret The Results
+
+Use the table above as evidence, not as an answer.
+
+Questions:
+
+1. Which tropes seem most prominent?
+2. Which individual pairs are especially revealing?
+3. Which labels feel too broad or too narrow?
+4. What would change if you revised your lexicon?
+5. What did the computational method make visible?
+6. What did it flatten, miss, or distort?
+
+## Closing Thought
+
+Digital Humanities is not a movement away from interpretation. In this workflow,
+interpretation happens at every stage:
+
+```text
+choosing terms -> assigning roles -> retrieving sentences -> extracting patterns -> naming tropes
+```

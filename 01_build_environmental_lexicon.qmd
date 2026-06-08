@@ -1,0 +1,159 @@
+---
+title: "1. Build an Environmental Lexicon"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Aim
+
+In this notebook you will turn interpretation into a structured lexicon.
+
+A lexicon is not just a list of words. It is a working definition of what your
+group means by environmental language.
+
+The important question is not simply:
+
+> Which environmental words can we think of?
+
+but:
+
+> What role should each word play in the analysis?
+
+```{r}
+#| label: setup
+#| include: false
+library(tidyverse)
+
+dir.create("data", showWarnings = FALSE)
+dir.create("output", showWarnings = FALSE)
+
+normalise_term <- function(x) {
+  x %>%
+    stringr::str_to_lower() %>%
+    stringr::str_squish()
+}
+```
+
+## Step 1: Understand The Categories
+
+We will classify terms in two ways.
+
+First, each term has a `type`.
+
+- `entity`: an environmental thing or place. Examples: forest, river, garden.
+- `process`: an environmental event or transformation. Examples: storm, rain, flood.
+- `condition`: a quality or state. Examples: dark, green, barren.
+- `exclude`: a word you discussed but chose not to use.
+
+Second, each term has a `role`.
+
+- `trigger`: a word used to retrieve likely environmental sentences.
+- `descriptor`: a word used to analyse how an environment is described.
+- `exclude`: a word that should not be used in the workflow.
+
+This distinction matters because some words are meaningful but bad search terms.
+For example, `dark` may be important in `dark forest`, but searching for every
+sentence containing `dark` will also retrieve dark rooms, dark hair, and dark
+secrets.
+
+## Step 2: Create Your Lexicon
+
+Fill in the table below. Add your own terms. The commented examples show the
+format, but you should decide your own list.
+
+Keep the quotation marks and commas. Remove the `#` at the start of a line if
+you want to use an example.
+
+```{r}
+# student_lexicon <- tibble::tribble(
+#   ~term, ~type, ~role, ~notes,
+#   "forest", "entity", "trigger", "clear environmental place",
+#   "river", "entity", "trigger", "clear environmental place",
+#   "storm", "process", "trigger", "weather event",
+#   "dark", "condition", "descriptor", "important but too broad as a trigger",
+#   "green", "condition", "descriptor", "quality or colour",
+#   "village", "exclude", "exclude", "borderline built place"
+# )
+
+# alternatively, you can edit the csv in excel directly, you will find it in "data/student_lexicon.csv". Make sure not to change or add any column for it to work correctly. If you decide to do so, you can run the following code when you are done adding terms:
+
+# student_lexicon <- readr::read_csv(file = "data/student_lexicon.csv")
+
+```
+
+## Step 3: Check Your Lexicon
+
+The code below checks that your categories are written consistently.
+
+```{r}
+student_lexicon <- student_lexicon %>%
+  mutate(
+    term = normalise_term(term),
+    type = normalise_term(type),
+    role = normalise_term(role)
+  ) %>%
+  filter(!is.na(term), term != "") %>%
+  distinct(term, .keep_all = TRUE)
+
+valid_types <- c("entity", "process", "condition", "exclude")
+valid_roles <- c("trigger", "descriptor", "exclude")
+
+invalid_types <- student_lexicon %>%
+  filter(!type %in% valid_types)
+
+invalid_roles <- student_lexicon %>%
+  filter(!role %in% valid_roles)
+
+if (nrow(student_lexicon) == 0) {
+  stop("Your lexicon is empty. Add some terms in Step 2.")
+}
+
+if (nrow(invalid_types) > 0) {
+  print(invalid_types)
+  stop("Some terms have an invalid type. Use entity, process, condition, or exclude.")
+}
+
+if (nrow(invalid_roles) > 0) {
+  print(invalid_roles)
+  stop("Some terms have an invalid role. Use trigger, descriptor, or exclude.")
+}
+
+student_lexicon
+```
+
+## Step 4: Summarise Your Decisions
+
+These summaries help you see the shape of your operational definition.
+
+```{r}
+student_lexicon %>%
+  count(type, sort = TRUE)
+```
+
+```{r}
+student_lexicon %>%
+  count(role, sort = TRUE)
+```
+
+## Step 5: Save Your Lexicon
+
+This saves (and overwrites) your new list so the next notebook can use it.
+
+```{r}
+readr::write_csv(student_lexicon, "data/student_lexicon.csv")
+```
+
+## Reflection
+
+Write brief answers below.
+
+1. Which terms were easy to classify?
+2. Which terms were difficult or borderline?
+3. Which words did you exclude, and why?
+4. What might your lexicon miss?

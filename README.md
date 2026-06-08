@@ -1,74 +1,52 @@
-# From Forests to Rivers: Identifying Environmental Tropes in Children's Literature
+# Environmental Tropes Workshop
 
-Repository for the Bielefeld 2026 workshop.
+You will use these Quarto notebooks to move from literary interpretation to a
+small computational analysis.
 
-These scripts follow the framework from the accompanying paper:
+The corpus has already been prepared for you. Your task begins with the
+interpretive decision: which words should count as environmental language, and
+what role should those words play in the analysis?
 
-1. Build an environmental lexicon.
-2. Separate terms by analytical role: trigger or descriptor.
-3. Use trigger terms to retrieve environmental sentences.
-4. Use descriptor terms to inspect how environments are represented.
-5. Interpret recurring patterns as environmental tropes.
+## Notebooks
 
-The key idea is:
+Open the notebooks in this order:
 
-> The computer is not discovering environment. It is applying our definition of environment.
+1. `01_build_environmental_lexicon.qmd`
+2. `02_analyse_environmental_sentences.qmd`
+3. `03_interpret_environmental_tropes.qmd`
 
-## Files
+## The Main Idea
 
-- `00_setup.R`: checks packages, paths, and input files.
-- `01_build_lexicon.R`: loads and summarises the student lexicon.
-- `02_extract_environmental_sentences.R`: retrieves sentences using trigger terms.
-- `03_find_descriptor_patterns.R`: extracts descriptor-trigger combinations.
-- `04_from_patterns_to_tropes.R`: helps students group patterns into tropes.
+The computer is not discovering environment by itself. It is applying the
+definition of environment that you give it.
 
-## Input Data
+The workflow is:
 
-Place the corpus file here:
+```text
+reading -> categories -> lexicon -> extraction -> patterns -> interpretation
+```
+
+## Key Terms
+
+- `entity`: an environmental thing or place, such as forest, river, garden, sky.
+- `process`: an environmental event or transformation, such as storm, rain, flood.
+- `condition`: a quality or state, such as dark, green, barren, cloudless.
+- `trigger`: a word used to retrieve likely environmental sentences.
+- `descriptor`: a word used to analyse how an environment is described.
+- `trope`: a larger interpretive pattern that you recognise in the results.
+
+## Data
+
+The prepared corpus is:
 
 ```text
 data/children_lit_sentences.csv
 ```
 
-It should contain at least these columns:
+It contains sentence-level extracts from:
 
-```text
-sentence_id,title,author,sentence
-```
+- Frances Hodgson Burnett, *The Secret Garden*
+- Kenneth Grahame, *The Wind in the Willows*
+- Rudyard Kipling, *The Jungle Book*
+- L. Frank Baum, *The Wonderful Wizard of Oz*
 
-Create the student lexicon from:
-
-```text
-data/student_lexicon_template.csv
-```
-
-Save the completed version as:
-
-```text
-data/student_lexicon.csv
-```
-
-The completed lexicon should contain:
-
-```text
-term,type,role,notes
-```
-
-Use:
-
-- `type`: `entity`, `process`, `condition`, or `exclude`
-- `role`: `trigger`, `descriptor`, or `exclude`
-
-## Running the Workshop
-
-Run the scripts in order:
-
-```r
-source("00_setup.R")
-source("01_build_lexicon.R")
-source("02_extract_environmental_sentences.R")
-source("03_find_descriptor_patterns.R")
-source("04_from_patterns_to_tropes.R")
-```
-
-Each script writes its results to the `output/` folder.
