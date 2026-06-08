@@ -47,3 +47,10 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# Workshop generated files
+output/
+data/children_lit_sentences.csv
+data/student_lexicon.csv
+data/trope_annotations.csv
+.DS_Store

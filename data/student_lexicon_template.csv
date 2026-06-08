@@ -1,0 +1,23 @@
+term,type,role,notes
+forest,entity,trigger,
+river,entity,trigger,
+mountain,entity,trigger,
+garden,entity,trigger,"borderline: natural and cultivated"
+tree,entity,trigger,
+field,entity,trigger,
+storm,process,trigger,
+flood,process,trigger,
+rain,process,trigger,
+growth,process,trigger,
+melting,process,trigger,
+dark,condition,descriptor,
+windblown,condition,descriptor,
+rocky,condition,descriptor,
+barren,condition,descriptor,
+overgrown,condition,descriptor,
+frozen,condition,descriptor,
+misty,condition,descriptor,
+polluted,condition,descriptor,
+village,exclude,exclude,"borderline: built place, not always environmental"
+school,exclude,exclude,
+king,exclude,exclude,
