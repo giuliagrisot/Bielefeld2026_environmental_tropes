@@ -15,6 +15,10 @@ Open the notebooks in this order:
 2. `02_analyse_environmental_sentences.qmd`
 3. `03_interpret_environmental_tropes.qmd`
 
+For the opening reading exercise, use:
+
+- `reading_extracts.md`
+
 ## The Main Idea
 
 The computer is not discovering environment by itself. It is applying the
@@ -49,4 +53,3 @@ It contains sentence-level extracts from:
 - Kenneth Grahame, *The Wind in the Willows*
 - Rudyard Kipling, *The Jungle Book*
 - L. Frank Baum, *The Wonderful Wizard of Oz*
-
