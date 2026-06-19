@@ -6,3 +6,5 @@ term,type,role,notes
 # green,condition,descriptor,condition or colour
 # village,exclude,exclude,borderline built place
 
+# Valid type values: entity, process, condition, exclude
+# Valid role values: trigger, descriptor, exclude

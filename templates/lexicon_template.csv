@@ -1,0 +1,7 @@
+term,type,role,notes
+forest,entity,trigger,example: environmental place; replace or delete example rows
+river,entity,trigger,example: environmental place; replace or delete example rows
+storm,process,trigger,example: weather event; replace or delete example rows
+dark,condition,descriptor,example: meaningful descriptor but too broad as a trigger
+green,condition,descriptor,example: colour or condition
+village,exclude,exclude,example: borderline built place

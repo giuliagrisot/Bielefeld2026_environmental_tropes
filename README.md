@@ -47,6 +47,20 @@ The prepared corpus is:
 data/children_lit_sentences.csv
 ```
 
+The original Project Gutenberg text files are available in:
+
+```text
+source_texts/
+```
+
+Lexicon templates are available in:
+
+```text
+templates/lexicon_template.csv
+templates/lexicon_template.xlsx
+templates/term_list_template.csv
+```
+
 It contains sentence-level extracts from:
 
 - Frances Hodgson Burnett, *The Secret Garden*

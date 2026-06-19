@@ -70,18 +70,28 @@ format, but you should decide your own list.
 Keep the quotation marks and commas. Remove the `#` at the start of a line if
 you want to use an example.
 
+Alternative: if you prefer working in a spreadsheet, open one of these template
+files, complete it, and save/export your finished lexicon as
+`data/student_lexicon.csv`:
+
+```text
+templates/lexicon_template.csv
+templates/lexicon_template.xlsx
+```
+
 ```{r}
-# student_lexicon <- tibble::tribble(
-#   ~term, ~type, ~role, ~notes,
+student_lexicon <- tibble::tribble(
+  ~term, ~type, ~role, ~notes,
 #   "forest", "entity", "trigger", "clear environmental place",
 #   "river", "entity", "trigger", "clear environmental place",
 #   "storm", "process", "trigger", "weather event",
 #   "dark", "condition", "descriptor", "important but too broad as a trigger",
 #   "green", "condition", "descriptor", "quality or colour",
 #   "village", "exclude", "exclude", "borderline built place"
-# )
+)
 
-# alternatively, you can edit the csv in excel directly, you will find it in "data/student_lexicon.csv". Make sure not to change or add any column for it to work correctly. If you decide to do so, you can run the following code when you are done adding terms:
+# If you complete the CSV/XLSX template instead of editing this table directly,
+# save/export it as data/student_lexicon.csv, then run this line:
 
 # student_lexicon <- readr::read_csv(file = "data/student_lexicon.csv")
 
