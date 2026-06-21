@@ -45,7 +45,18 @@ The corpus has already been prepared. It contains sentence-level extracts from
 the four novels.
 
 ```{r}
-lexicon <- readr::read_csv("data/student_lexicon.csv", show_col_types = FALSE) %>%
+if (file.exists("data/student_lexicon.csv")) {
+  lexicon <- readr::read_csv("data/student_lexicon.csv", show_col_types = FALSE)
+} else if (file.exists("data/student_lexicon.xlsx")) {
+  if (!requireNamespace("readxl", quietly = TRUE)) {
+    stop("Install the readxl package to read .xlsx files, or save your lexicon as data/student_lexicon.csv.")
+  }
+  lexicon <- readxl::read_excel("data/student_lexicon.xlsx", sheet = "lexicon")
+} else {
+  stop("No lexicon found. Create data/student_lexicon.csv or data/student_lexicon.xlsx in Notebook 1.")
+}
+
+lexicon <- lexicon %>%
   mutate(
     term = normalise_term(term),
     type = normalise_term(type),
@@ -226,4 +237,3 @@ readr::write_csv(pair_counts, "output/03_descriptor_trigger_pair_counts.csv")
 1. Which descriptor-trigger pairs are most interesting?
 2. Are the most frequent pairs also the most meaningful?
 3. What kinds of description does this method miss?
-

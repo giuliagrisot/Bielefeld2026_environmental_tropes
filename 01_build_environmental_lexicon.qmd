@@ -64,37 +64,50 @@ secrets.
 
 ## Step 2: Create Your Lexicon
 
-Fill in the table below. Add your own terms. The commented examples show the
-format, but you should decide your own list.
+The easiest option is to work in a spreadsheet.
 
-Keep the quotation marks and commas. Remove the `#` at the start of a line if
-you want to use an example.
-
-Alternative: if you prefer working in a spreadsheet, open one of these template
-files, complete it, and save/export your finished lexicon as
-`data/student_lexicon.csv`:
+Open:
 
 ```text
-templates/lexicon_template.csv
 templates/lexicon_template.xlsx
 ```
 
+Fill in the `lexicon` sheet, then save your completed file as:
+
+```text
+data/student_lexicon.xlsx
+```
+
+If Excel is not convenient in Posit Cloud, you can instead complete the CSV
+template and save it as `data/student_lexicon.csv`:
+
+```text
+templates/lexicon_template.csv
+```
+
+The notebook will look first for `data/student_lexicon.xlsx`, then for
+`data/student_lexicon.csv`. If neither file exists, it will use the small empty
+table below, which you can edit directly in R.
+
 ```{r}
-student_lexicon <- tibble::tribble(
-  ~term, ~type, ~role, ~notes,
-#   "forest", "entity", "trigger", "clear environmental place",
-#   "river", "entity", "trigger", "clear environmental place",
-#   "storm", "process", "trigger", "weather event",
-#   "dark", "condition", "descriptor", "important but too broad as a trigger",
-#   "green", "condition", "descriptor", "quality or colour",
-#   "village", "exclude", "exclude", "borderline built place"
-)
-
-# If you complete the CSV/XLSX template instead of editing this table directly,
-# save/export it as data/student_lexicon.csv, then run this line:
-
-# student_lexicon <- readr::read_csv(file = "data/student_lexicon.csv")
-
+if (file.exists("data/student_lexicon.xlsx")) {
+  if (!requireNamespace("readxl", quietly = TRUE)) {
+    stop("Install the readxl package to read .xlsx files, or save your lexicon as data/student_lexicon.csv.")
+  }
+  student_lexicon <- readxl::read_excel("data/student_lexicon.xlsx", sheet = "lexicon")
+} else if (file.exists("data/student_lexicon.csv")) {
+  student_lexicon <- readr::read_csv("data/student_lexicon.csv", show_col_types = FALSE)
+} else {
+  student_lexicon <- tibble::tribble(
+    ~term, ~type, ~role, ~notes,
+    # "forest", "entity", "trigger", "clear environmental place",
+    # "river", "entity", "trigger", "clear environmental place",
+    # "storm", "process", "trigger", "weather event",
+    # "dark", "condition", "descriptor", "important but too broad as a trigger",
+    # "green", "condition", "descriptor", "quality or colour",
+    # "village", "exclude", "exclude", "borderline built place"
+  )
+}
 ```
 
 ## Step 3: Check Your Lexicon
@@ -153,7 +166,8 @@ student_lexicon %>%
 
 ## Step 5: Save Your Lexicon
 
-This saves (and overwrites) your new list so the next notebook can use it.
+This saves (and overwrites) a CSV copy so the next notebook can use it. Even if
+you created your lexicon in Excel, the later notebooks will use this CSV version.
 
 ```{r}
 readr::write_csv(student_lexicon, "data/student_lexicon.csv")

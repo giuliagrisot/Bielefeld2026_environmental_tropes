@@ -61,6 +61,15 @@ templates/lexicon_template.xlsx
 templates/term_list_template.csv
 ```
 
+For the first exercise, the easiest route is usually to complete
+`templates/lexicon_template.xlsx` and save the finished file as:
+
+```text
+data/student_lexicon.xlsx
+```
+
+Notebook 1 will save a CSV copy for the later notebooks.
+
 It contains sentence-level extracts from:
 
 - Frances Hodgson Burnett, *The Secret Garden*
