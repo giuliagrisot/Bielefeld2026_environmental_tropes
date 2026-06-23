@@ -100,7 +100,25 @@ read_lexicon_file <- function(path) {
 The corpus has already been prepared. It contains sentence-level extracts from
 the four novels.
 
+For the main workshop, use the prepared English corpus:
+
+```text
+data/children_lit_sentences.csv
+```
+
+For a future German version of the exercise, create a sentence-level corpus with
+the same columns and change `corpus_path` to point to it, for example:
+
+```text
+data/german_children_lit_sentences.csv
+```
+
 ```{r}
+corpus_path <- "data/children_lit_sentences.csv"
+
+# Optional future German corpus:
+# corpus_path <- "data/german_children_lit_sentences.csv"
+
 if (file.exists("data/student_lexicon.csv")) {
   lexicon <- read_lexicon_file("data/student_lexicon.csv")
 } else if (file.exists("data/student_lexicon.xlsx")) {
@@ -116,10 +134,25 @@ lexicon <- lexicon %>%
     role = normalise_term(role)
   )
 
-corpus <- readr::read_csv("data/children_lit_sentences.csv", show_col_types = FALSE)
+corpus <- readr::read_csv(corpus_path, show_col_types = FALSE)
 
 glimpse(corpus)
 ```
+
+### Optional: German Texts
+
+The same method can work with German children's literature, but the lexicon
+usually needs more variants than the English example.
+
+Useful checks:
+
+- include singular and plural forms when needed, such as `wald` and `waelder`
+- include common compounds if they matter, such as `waldweg`, `flussufer`,
+  `gartenmauer`, or `baumkrone`
+- check whether your corpus keeps umlauts (`grün`, `Wälder`) or transliterates
+  them (`gruen`, `Waelder`)
+- keep the `type` and `role` values in English: `entity`, `process`,
+  `condition`, `trigger`, `descriptor`, `exclude`
 
 ## Step 2: Inspect The Corpus
 

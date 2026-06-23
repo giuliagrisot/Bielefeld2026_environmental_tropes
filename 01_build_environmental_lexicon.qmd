@@ -145,6 +145,32 @@ The notebook will look first for `data/student_lexicon.xlsx`, then for
 `data/student_lexicon.csv`. If neither file exists, it will use the small empty
 table below, which you can edit directly in R.
 
+### Optional: Starting From A German Sample Lexicon
+
+If you later use this workflow with German children's literature, the same
+structure still applies: `term`, `type`, `role`, and `notes`.
+
+German examples might include terms such as `wald`, `fluss`, `garten`, `sturm`,
+`regen`, `dunkel`, `wild`, or `tief`. The important thing is not the language
+itself, but the interpretive decision about what each term does in the analysis.
+
+For German texts, pay special attention to:
+
+- inflected forms, such as `wald`, `walde`, `waldes`, or `waelder`
+- compounds, such as `waldweg`, `flussufer`, or `gartenmauer`
+- spelling choices in your corpus, especially umlauts: `grün` / `gruen`,
+  `Wälder` / `Waelder`
+
+A tutor-only sample file is available outside the student data folder:
+
+```text
+../tutor_files/german_sample_lexicon.csv
+```
+
+To use it for testing, copy it into this folder as `data/student_lexicon.csv`.
+Do not do this for the main workshop unless you intentionally want to give
+students a completed lexicon.
+
 ```{r}
 if (file.exists("data/student_lexicon.xlsx")) {
   student_lexicon <- read_lexicon_file("data/student_lexicon.xlsx")

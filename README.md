@@ -76,3 +76,24 @@ It contains sentence-level extracts from:
 - Kenneth Grahame, *The Wind in the Willows*
 - Rudyard Kipling, *The Jungle Book*
 - L. Frank Baum, *The Wonderful Wizard of Oz*
+
+## Optional Future Adaptation: German Texts
+
+The notebooks can also be adapted for German children's literature if you have a
+German sentence-level corpus with the same columns as `data/children_lit_sentences.csv`.
+
+For German texts, keep the category labels in English:
+
+```text
+entity, process, condition, exclude
+trigger, descriptor, exclude
+```
+
+But use German terms in the `term` column, such as `wald`, `fluss`, `garten`,
+`sturm`, `regen`, `dunkel`, `wild`, or `tief`.
+
+German corpora may need more variants because of inflection and compounds:
+
+- `wald`, `walde`, `waldes`, `waelder`
+- `waldweg`, `flussufer`, `gartenmauer`
+- `grün` / `gruen`, depending on how the text has been cleaned
