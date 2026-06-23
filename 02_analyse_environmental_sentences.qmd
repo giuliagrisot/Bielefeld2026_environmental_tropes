@@ -37,6 +37,62 @@ normalise_term <- function(x) {
 regex_escape <- function(x) {
   stringr::str_replace_all(x, "([\\\\.^$|()\\[\\]{}*+?])", "\\\\\\1")
 }
+
+standardise_lexicon_table <- function(x) {
+  required_columns <- c("term", "type", "role", "notes")
+
+  x <- x %>%
+    as_tibble(.name_repair = "minimal")
+
+  if (ncol(x) < 4) {
+    stop("The lexicon must have four columns: term, type, role, notes.")
+  }
+
+  x <- x[, seq_len(4), drop = FALSE]
+  names(x) <- required_columns
+
+  if (nrow(x) == 0) {
+    return(x)
+  }
+
+  x %>%
+    mutate(across(everything(), as.character)) %>%
+    filter(
+      !(
+        normalise_term(term) == "term" &
+          normalise_term(type) == "type" &
+          normalise_term(role) == "role" &
+          normalise_term(notes) == "notes"
+      )
+    )
+}
+
+read_lexicon_file <- function(path) {
+  if (stringr::str_ends(path, "\\.xlsx$")) {
+    if (!requireNamespace("readxl", quietly = TRUE)) {
+      stop("Install the readxl package to read .xlsx files, or save your lexicon as data/student_lexicon.csv.")
+    }
+
+    sheet_names <- readxl::excel_sheets(path)
+    sheet_to_read <- if ("lexicon" %in% sheet_names) "lexicon" else sheet_names[1]
+
+    raw_lexicon <- readxl::read_excel(
+      path,
+      sheet = sheet_to_read,
+      col_names = FALSE,
+      .name_repair = "minimal"
+    )
+  } else {
+    raw_lexicon <- readr::read_csv(
+      path,
+      col_names = FALSE,
+      comment = "#",
+      show_col_types = FALSE
+    )
+  }
+
+  standardise_lexicon_table(raw_lexicon)
+}
 ```
 
 ## Step 1: Load Your Lexicon And The Corpus
@@ -46,12 +102,9 @@ the four novels.
 
 ```{r}
 if (file.exists("data/student_lexicon.csv")) {
-  lexicon <- readr::read_csv("data/student_lexicon.csv", show_col_types = FALSE)
+  lexicon <- read_lexicon_file("data/student_lexicon.csv")
 } else if (file.exists("data/student_lexicon.xlsx")) {
-  if (!requireNamespace("readxl", quietly = TRUE)) {
-    stop("Install the readxl package to read .xlsx files, or save your lexicon as data/student_lexicon.csv.")
-  }
-  lexicon <- readxl::read_excel("data/student_lexicon.xlsx", sheet = "lexicon")
+  lexicon <- read_lexicon_file("data/student_lexicon.xlsx")
 } else {
   stop("No lexicon found. Create data/student_lexicon.csv or data/student_lexicon.xlsx in Notebook 1.")
 }
