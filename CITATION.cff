@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use these workshop materials, please cite them as below."
+title: "Environmental Tropes Workshop"
+authors:
+  - family-names: "Grisot"
+    given-names: "Giulia"
+year: 2026
+type: educational-material
+url: "https://github.com/giuliagrisot/Bielefeld2026_environmental_tropes"
+repository-code: "https://github.com/giuliagrisot/Bielefeld2026_environmental_tropes"
+license: "MIT AND CC-BY-4.0"
+keywords:
+  - environmental humanities
+  - children's literature
+  - R
+  - digital methods
+  - text analysis
+  - tropes
+abstract: "Workshop materials for moving from literary interpretation to a small computational analysis of environmental language and tropes."

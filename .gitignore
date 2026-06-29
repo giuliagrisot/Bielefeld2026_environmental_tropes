@@ -53,4 +53,5 @@ output/
 data/student_lexicon.csv
 data/trope_annotations.csv
 data/trope_annotations_template.csv
+Rplots.pdf
 .DS_Store

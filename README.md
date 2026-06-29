@@ -19,6 +19,11 @@ For the opening reading exercise, use:
 
 - `reading_extracts.md`
 
+## Citation
+
+If you use or adapt these materials, please cite the repository. GitHub should
+display citation information from `CITATION.cff`.
+
 ## The Main Idea
 
 The computer is not discovering environment by itself. It is applying the
@@ -97,3 +102,14 @@ German corpora may need more variants because of inflection and compounds:
 - `wald`, `walde`, `waldes`, `waelder`
 - `waldweg`, `flussufer`, `gartenmauer`
 - `grün` / `gruen`, depending on how the text has been cleaned
+
+## License
+
+Code in this repository is licensed under the MIT License. See `LICENSE`.
+
+Teaching materials, including prose, notebook explanations, reading exercises,
+templates, and workshop documentation, are licensed under the Creative Commons
+Attribution 4.0 International License (CC BY 4.0). See `LICENSE-CONTENT.md`.
+
+Project Gutenberg source texts, corpus extracts, third-party libraries, and
+external materials remain subject to their original licenses and terms.
